@@ -1,24 +1,15 @@
-// Semua operasi database via Supabase
-// Fallback ke data.ts jika Supabase belum dikonfigurasi
-
 import { supabase } from './supabase';
 import { tracks as defaultTracks, albums as defaultAlbums } from './data';
 import type { Track, Album } from '@/types';
 
 function isConfigured(): boolean {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-  return url.length > 0 && !url.includes('YOUR_PROJECT_ID');
+  return supabase !== null;
 }
-
-// ── Tracks ──────────────────────────────────────────────
 
 export async function getTracks(): Promise<Track[]> {
   if (!isConfigured()) return defaultTracks;
   try {
-    const { data, error } = await supabase
-      .from('tracks')
-      .select('*')
-      .order('created_at', { ascending: true });
+    const { data, error } = await supabase!.from('tracks').select('*').order('created_at', { ascending: true });
     if (error) throw error;
     return (data || []).map(mapTrack);
   } catch (e) {
@@ -30,41 +21,29 @@ export async function getTracks(): Promise<Track[]> {
 export async function addTrack(track: Omit<Track, 'id'>): Promise<Track | null> {
   if (!isConfigured()) return null;
   const id = `t${Date.now()}`;
-  const { data, error } = await supabase
-    .from('tracks')
-    .insert([mapTrackToDb({ ...track, id })])
-    .select()
-    .single();
+  const { data, error } = await supabase!.from('tracks').insert([mapTrackToDb({ ...track, id })]).select().single();
   if (error) { console.error('addTrack error:', error); return null; }
   return mapTrack(data);
 }
 
 export async function updateTrack(id: string, track: Partial<Track>): Promise<boolean> {
   if (!isConfigured()) return false;
-  const { error } = await supabase
-    .from('tracks')
-    .update(mapTrackToDb(track as Track))
-    .eq('id', id);
+  const { error } = await supabase!.from('tracks').update(mapTrackToDb(track as Track)).eq('id', id);
   if (error) { console.error('updateTrack error:', error); return false; }
   return true;
 }
 
 export async function deleteTrack(id: string): Promise<boolean> {
   if (!isConfigured()) return false;
-  const { error } = await supabase.from('tracks').delete().eq('id', id);
+  const { error } = await supabase!.from('tracks').delete().eq('id', id);
   if (error) { console.error('deleteTrack error:', error); return false; }
   return true;
 }
 
-// ── Albums ──────────────────────────────────────────────
-
 export async function getAlbums(): Promise<Album[]> {
   if (!isConfigured()) return defaultAlbums;
   try {
-    const { data, error } = await supabase
-      .from('albums')
-      .select('*')
-      .order('created_at', { ascending: true });
+    const { data, error } = await supabase!.from('albums').select('*').order('created_at', { ascending: true });
     if (error) throw error;
     return (data || []).map(mapAlbum);
   } catch (e) {
@@ -76,33 +55,24 @@ export async function getAlbums(): Promise<Album[]> {
 export async function addAlbum(album: Omit<Album, 'id' | 'trackIds'>): Promise<Album | null> {
   if (!isConfigured()) return null;
   const id = `a${Date.now()}`;
-  const { data, error } = await supabase
-    .from('albums')
-    .insert([mapAlbumToDb({ ...album, id, trackIds: [] })])
-    .select()
-    .single();
+  const { data, error } = await supabase!.from('albums').insert([mapAlbumToDb({ ...album, id, trackIds: [] })]).select().single();
   if (error) { console.error('addAlbum error:', error); return null; }
   return mapAlbum(data);
 }
 
 export async function updateAlbum(id: string, album: Partial<Album>): Promise<boolean> {
   if (!isConfigured()) return false;
-  const { error } = await supabase
-    .from('albums')
-    .update(mapAlbumToDb(album as Album))
-    .eq('id', id);
+  const { error } = await supabase!.from('albums').update(mapAlbumToDb(album as Album)).eq('id', id);
   if (error) { console.error('updateAlbum error:', error); return false; }
   return true;
 }
 
 export async function deleteAlbum(id: string): Promise<boolean> {
   if (!isConfigured()) return false;
-  const { error } = await supabase.from('albums').delete().eq('id', id);
+  const { error } = await supabase!.from('albums').delete().eq('id', id);
   if (error) { console.error('deleteAlbum error:', error); return false; }
   return true;
 }
-
-// ── Mappers ─────────────────────────────────────────────
 
 function mapTrack(row: any): Track {
   return {
