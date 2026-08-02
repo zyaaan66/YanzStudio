@@ -20,7 +20,7 @@ Dibangun dengan Next.js 14, Tailwind CSS, Supabase, dan YouTube IFrame API.
 ## 📖 Tentang Proyek
 
 YanzStudio adalah platform streaming musik pribadi yang dibangun sebagai proyek personal. Terinspirasi dari desain Crafto Music dan antarmuka Spotify, proyek ini menggabungkan player musik yang powerful dengan manajemen konten yang mudah lewat Admin Panel bawaan.
-
+<img width="1902" height="898" alt="image" src="https://github.com/user-attachments/assets/98fd1351-ba1d-42f9-8a02-fb3e4501922c" />
 Proyek ini **open source dan bebas digunakan** oleh siapa saja untuk keperluan pribadi maupun komersial.
 
 ---
